@@ -1,0 +1,65 @@
+
+1. Find customers who have never ordered
+*Answer 1
+
+SELECT name 
+FROM users
+WHERE user_id NOT IN (SELECT user_id FROM orders);
+
+2. Average Price/dish
+*Answer 2
+
+SELECT f.f_name, AVG(price) AS 'Avg Price' 
+FROM menu m
+JOIN food f
+ON m.f_id = f.f_id
+GROUP BY m.f_id;
+
+3. Find the top restaurant in terms of the number of orders for a given month
+
+--> To extract month name from the given dates
+
+SELECT *, MONTHNAME(date) AS 'month' 
+FROM orders
+WHERE MONTHNAME(date) LIKE 'June';
+
+*Answer 3
+
+SELECT r.r_name, COUNT(*) AS 'month'
+FROM orders o
+JOIN restaurants r
+ON o.r_id = r.r_id
+WHERE MONTHNAME(date) LIKE 'June';
+GROUP BY o.r_id 
+ORDER BY COUNT(*) DESC
+LIMIT 1;
+
+
+4. restaurants with monthly sales greater than x
+
+*Answer 4
+
+SELECT r.r_name, SUM(amount) AS 'revenue'
+FROM orders o 
+JOIN restaurants r
+ON r.r_id = o.r_id
+WHERE MONTHNAME(date) LIKE 'June';
+GROUP BY o.r_id 
+HAVING revenue > 500;
+
+5. Show all orders with order details for a particular customer in a particular date range
+
+*Answer 5
+
+SELECT o.order_id, f.f_id, r.r_name
+FROM orders o
+JOIN restaurants r
+ON r.r_id = o.r_id
+JOIN order_details od
+ON o.order_id = od.order_id
+JOIN food f
+ON f.f_id = od.f_id
+WHERE user_id = (SELECT user_id FROM users WHERE name LIKE 'Ankit')
+AND(date > '2022-02-10' AND date < '2022-07-10');
+
+
